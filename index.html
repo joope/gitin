@@ -47,6 +47,8 @@
         const merge = async () => {
             await git.pull({
                 dir: '.',
+                corsProxy: 'https://cors.isomorphic-git.org',
+                url: 'https://github.com/joope/gitin.git',
                 ref: 'master',
                 singleBranch: true,
                 fastForwardOnly: true,
