@@ -1,0 +1,40 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <h1>Hello maailma</h1>
+        <script src="https://isomorphic-git.org/js/browserfs.js"></script>
+        <script src="https://isomorphic-git.org/js/pify.js"></script>
+        <script src="https://unpkg.com/isomorphic-git"></script>
+        <script>
+        
+        let fsOptions = {
+          fs: 'IndexedDB',
+          options: {}
+        }
+        
+        BrowserFS.configure({ fs: "IndexedDB", options: {} }, async function (err) {
+            if (err) return console.log(err);
+            window.fs = BrowserFS.BFSRequire("fs");
+            git.plugins.set('fs', window.fs);
+            window.pfs = pify(fs);
+            const dir = '.';
+
+            await git.clone({
+                dir,
+                corsProxy: 'https://cors.isomorphic-git.org',
+                url: 'https://github.com/joope/gitin.git',
+                ref: 'master',
+                singleBranch: true,
+                depth: 5
+            });
+
+            // Now it should not be empty...
+            console.log(await pfs.readdir(dir));
+        });
+
+
+        
+        </script>
+    </body>
+</html>
