@@ -48,7 +48,8 @@
             await git.pull({
                 dir: '.',
                 ref: 'master',
-                singleBranch: true
+                singleBranch: true,
+                fastForwardOnly: true,
             });
             console.log('Pulled!')
         }
