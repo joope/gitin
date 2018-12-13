@@ -69,14 +69,12 @@
             await parseScript();
         })();
 
-        io.on('connection', function(socket){
-            socket.on('update', async () => {
-                console.log('Updating!');
-                await merge();
-                await parseScript();
-            })
+        socket.on('update', async () => {
+            console.log('Updating!');
+            await merge();
+            await parseScript();
         });
-        
+
         </script>
     </body>
 </html>

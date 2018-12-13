@@ -7,6 +7,7 @@ app.get('/', (req, res) => res.sendFile(__dirname + '/index.html'));
 
 app.get('/webhook', (req, res) => {
     io.emit('update', 'someVersionId');
+    return res.sendStatus(200);
 })
 
 io.on('connection', function(socket){
