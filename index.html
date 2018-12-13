@@ -6,6 +6,8 @@
         <script src="https://isomorphic-git.org/js/browserfs.js"></script>
         <script src="https://isomorphic-git.org/js/pify.js"></script>
         <script src="https://unpkg.com/isomorphic-git"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.slim.js"></script>
+        
         <script>
         
         let fsOptions = {
@@ -23,6 +25,8 @@
         };
         
         const cloned = window.localStorage.getItem('cloned');
+
+        const socket = io();
 
         const initialize = () => new Promise((res, rej) => {
             BrowserFS.configure({ fs: "IndexedDB", options: {} }, async function (err) {
@@ -63,7 +67,16 @@
                 await merge();
             }
             await parseScript();
-        })()
+        })();
+
+        io.on('connection', function(socket){
+            socket.on('update', async () => {
+                console.log('Updating!');
+                await merge();
+                await parseScript();
+            })
+        });
+        
         </script>
     </body>
 </html>
