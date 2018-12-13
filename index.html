@@ -13,28 +13,57 @@
           options: {}
         }
         
-        BrowserFS.configure({ fs: "IndexedDB", options: {} }, async function (err) {
-            if (err) return console.log(err);
-            window.fs = BrowserFS.BFSRequire("fs");
-            git.plugins.set('fs', window.fs);
-            window.pfs = pify(fs);
-            const dir = '.';
+        const gitOptions = {
+            dir: '.',
+            corsProxy: 'https://cors.isomorphic-git.org',
+            url: 'https://github.com/joope/gitin.git',
+            ref: 'master',
+            singleBranch: true,
+            depth: 1
+        };
+        
+        const cloned = window.localStorage.getItem('cloned');
 
-            await git.clone({
-                dir,
-                corsProxy: 'https://cors.isomorphic-git.org',
-                url: 'https://github.com/joope/gitin.git',
-                ref: 'master',
-                singleBranch: true,
-                depth: 5
+        const initialize = () => new Promise((res, rej) => {
+            BrowserFS.configure({ fs: "IndexedDB", options: {} }, async function (err) {
+                if (err) return console.log(err);
+                window.fs = BrowserFS.BFSRequire("fs");
+                git.plugins.set('fs', window.fs);
+                window.pfs = pify(fs);
+                res();
             });
-
-            // Now it should not be empty...
-            console.log(await pfs.readdir(dir));
         });
 
+        const clone = async () => {
+            await git.clone(gitOptions);
+            window.localStorage.setItem('cloned', 'true');
+            console.log('Cloned!');
+        }
 
+        const merge = async () => {
+            await git.pull({
+                dir: '.',
+                ref: 'master',
+                singleBranch: true
+            });
+            console.log('Pulled!')
+        }
+
+        const parseScript = async () => {
+            const script = await pfs.readFile('/main.js');
+            eval(script.toString());
+            console.log('Evaled!')
+        }
         
+        (async function main(){
+            await initialize();
+            if (!cloned) {
+                await clone();
+            } else {
+                await merge();
+            }
+            await parseScript();
+        })()
         </script>
     </body>
 </html>
